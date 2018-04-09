@@ -1,7 +1,10 @@
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+const Joi = require('joi');
 
+  
+ 
 var employee_Schema = new Schema({ 
     firstName: { type: String, required: true},
     lastName : { type: String, required: true},
@@ -10,19 +13,11 @@ var employee_Schema = new Schema({
     phone    : { type: String, required: true},
     department  : { type: String, required: true} 
 });
+ 
 
 var employee = mongoose.model('employee', employee_Schema);
 
 module.exports.employee = employee;
 
-
-
-var departmentSchema = new Schema({ 
-    name: String,
-    deptno : String 
-});
-
-var department = mongoose.model('department', departmentSchema);
-
-module.exports.department = department;
+ 
 

@@ -1,7 +1,12 @@
 var express = require('express');
 var mongoose = require('mongoose'); 
 var employee = require('../models/employee').employee;
-
+var BodyParser = require('body-parser');  
+var ExpressJoi = require('express-joi-validator'); 
+const Joi = require('joi');  
+ 
+ const { check, validationResult } = require('express-validator/check');
+const { matchedData, sanitize } = require('express-validator/filter');
 
 exports.json = function(req, res, next) { 
     var sss= employee.find({}, function(err, newempd) {
@@ -57,6 +62,7 @@ exports.update = function(req, res, next) {
 
 exports.employee = function(req, res, next) { 
         var data = req.body;
+        
 	    var newemp1 = employee({
 	        firstName: data.firstName,
 	        lastName: data.lastName,
@@ -65,13 +71,33 @@ exports.employee = function(req, res, next) {
 	        phone: data.phone,
 	        department: data.department
 	    });
+	   
 	    newemp1.save(function(err, data) {
 	        // if (err) throw err;
 	        if (err) {
-	            // console.log('ERROR : ' + JSON.stringify(err));
-	            console.log('ERROR : ' + JSON.stringify(err.errors.firstName.message));
+	             
+	            console.log(err.validations);
+	            req.check('firstName', 'First Name is required').notEmpty();
+    			req.check('lastName', 'Last Name is required').notEmpty();
+    			req.check('address', 'address is required').notEmpty();
+    			req.check('country', 'country is required').notEmpty();
+    			req.check('phone', 'phone is required').notEmpty();
+    			req.check('department', 'department is required').notEmpty();
+     			 var errors = req.validationErrors(true);
+
+     		 
+
+	           // console.log('ERROR : ' + JSON.stringify(errors));
+	           // console.log('ERROR : ' + JSON.stringify(err.errors.firstName.message));
 	            employee.find({}, function(err1, newempd) {
-	                res.render('index2.ejs', { empData: JSON.stringify(newempd), errData: err.errors });
+	                res.render('index2.ejs', { empData: JSON.stringify(newempd), errData:{
+	                firstName:(errors.firstName?errors.firstName.msg:''),
+	                lastName:(errors.lastName?errors.lastName.msg:''),
+	                address:(errors.address?errors.address.msg:''),
+	                country:(errors.country?errors.country.msg:''),
+	                phone:(errors.phone?errors.phone.msg:''),
+	                department:(errors.department?errors.department.msg:'') 
+	                }});  // err.errors 
 	            });
 
 	        } else {
